@@ -1,0 +1,256 @@
+/* WeighingMS Application Styles */
+/* This file builds upon the styles from the prototype HTML */
+
+/* Additional styles for interactive components */
+.btn {
+  padding: 8px 16px;
+  border: 1px solid var(--page-line);
+  background: var(--page-panel);
+  color: var(--page-ink);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  border-color: var(--page-accent);
+}
+
+.btn.primary {
+  background: var(--page-accent);
+  border-color: var(--page-accent);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: var(--page-accent);
+  opacity: 0.9;
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: var(--page-panel);
+  border: 1px solid var(--page-line);
+  border-radius: 4px;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.notification.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.notification.success {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.notification.error {
+  border-color: var(--over);
+  color: var(--over);
+}
+
+/* Component styles */
+.comp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hmi-line);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comp:hover {
+  background: var(--hmi-panel-2);
+}
+
+.comp[data-state="active"] {
+  background: var(--hmi-panel-2);
+  border-left: 3px solid var(--warn);
+}
+
+.comp[data-state="done"] {
+  opacity: 0.6;
+}
+
+.comp-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.comp-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.code {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--hmi-dim);
+}
+
+.qty {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--hmi-dim);
+}
+
+.scale-info {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--steel);
+}
+
+.st {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Weighing interface styles */
+.weigh-interface {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  height: 100%;
+}
+
+.weigh-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.weigh-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.status-line {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Ticket styles */
+.ticket-content {
+  padding: 20px;
+}
+
+.ticket-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--hmi-line);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--hmi-dim);
+}
+
+.value {
+  font-family: var(--mono);
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.ticket-table th,
+.ticket-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--hmi-line);
+}
+
+.ticket-table th {
+  background: var(--hmi-panel);
+  font-weight: 600;
+}
+
+.ticket-table td {
+  font-family: var(--mono);
+}
+
+/* Compensation panel */
+.compensation-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--hmi-panel);
+  border: 2px solid var(--warn);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+  display: none;
+  max-width: 400px;
+  text-align: center;
+}
+
+.compensation-panel h3 {
+  color: var(--warn);
+  margin-top: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 860px) {
+  .weigh-interface {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .readout {
+    grid-template-columns: 1fr;
+  }
+}

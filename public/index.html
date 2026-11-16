@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeighingMS — Assisted Dyestuff Weighing Station</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <span class="eyebrow">WeighingMS · FCI · Mockup for discussion</span>
+      <h1>Assisted Dyestuff Weighing Station</h1>
+      <p class="standfirst">
+        A working mockup of the 15" touchscreen at the weighing station. Nothing here is agreed: it is a demonstration of the AI-DLC construction methodology. Values, layout and terminology are our assumptions, drawn from the product brief.
+      </p>
+    </div>
+
+    <div class="controls">
+      <span class="ctl-label">Screen</span>
+      <div class="seg" role="group" aria-label="Screen">
+        <button type="button" data-view="queue" aria-pressed="false">1 · Select batch</button>
+        <button type="button" data-view="weigh" aria-pressed="true">2 · Weigh</button>
+        <button type="button" data-view="done" aria-pressed="false">3 · Confirm &amp; print</button>
+      </div>
+      <span class="spacer"></span>
+      <button type="button" class="btn primary" id="sim-ok">▶ Simulate dispense</button>
+      <button type="button" class="btn" id="sim-over">▶ Simulate overshoot</button>
+      <button type="button" class="btn" id="sim-reset">Reset</button>
+      <label class="toggle">
+        <input type="checkbox" id="pin-toggle" checked> Show question pins
+      </label>
+    </div>
+
+    <div class="device">
+      <!-- Batch selection screen -->
+      <div class="view" id="queue">
+        <div class="topbar">
+          <span class="brandmark"><span class="n">WeighingMS</span><span class="s">STATION&nbsp;01</span></span>
+          <span class="crumb">BATCH <b>B-24187</b> · ORDER <b>SO-9931</b> · MACHINE <b>JET-04</b></span>
+          <span class="spacer"></span>
+          <span class="op-chip"><span class="dot"></span>Operator&nbsp;<b>R. Karim</b> · Shift A</span>
+        </div>
+        <div class="stage">
+          <h2>1 · Select batch</h2>
+          <div class="queue-container">
+            <div class="scan-prompt">
+              <div class="beam" aria-hidden="true"></div>
+              <div class="big">Scan a batch card to begin</div>
+              <div class="sm">Or touch a row below. Queue received from OrgaTEX at 06:12.</div>
+            </div>
+            <table class="q">
+              <thead>
+                <tr>
+                  <th>Batch</th><th>Order</th><th>Machine</th><th>Item</th><th>Shade</th><th>Components</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Batches will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weighing screen -->
+      <div class="view active" id="weigh">
+        <div class="topbar">
+          <span class="brandmark"><span class="n">WeighingMS</span><span class="s">STATION&nbsp;01</span></span>
+          <span class="crumb">BATCH <b>B-24187</b> · ORDER <b>SO-9931</b> · MACHINE <b>JET-04</b></span>
+          <span class="spacer"></span>
+          <span class="op-chip"><span class="dot"></span>Operator&nbsp;<b>R. Karim</b> · Shift A</span>
+        </div>
+
+        <div class="stage">
+          <h2>2 · Weigh</h2>
+          <div class="weigh-interface">
+            <aside class="rail">
+              <div class="rail-head">
+                <span class="t">Recipe · Teal 4C</span>
+                <span class="v">B-24187</span>
+                <span class="m"><span id="rail-done">2</span> of 5 components weighed</span>
+              </div>
+              <ul class="comps" id="comps">
+                <!-- Components will be populated by JavaScript -->
+              </ul>
+            </aside>
+
+            <section class="weigh">
+              <div class="weigh-head">
+                <div class="who">
+                  <span class="nm" id="w-name">Remazol Yellow RGB</span>
+                  <span class="meta" id="w-meta">DYE-4471 · LOT 2026-0387 · CONTAINER C-12 · TARE 214 g</span>
+                </div>
+                <div class="scale-badge">
+                  <span class="k">Scale selected</span>
+                  <span class="v" id="w-scale">3 kg precision</span>
+                  <span class="auto">automatic</span>
+                </div>
+              </div>
+
+              <div class="readout">
+                <div class="cell live" id="cell-live" data-zone="under">
+                  <span class="k">Weighed now</span>
+                  <span class="v"><span id="w-now">0.0</span> <span class="u" id="u1">g</span></span>
+                </div>
+                <div class="cell">
+                  <span class="k">Still to weigh</span>
+                  <span class="v"><span id="w-left">94.0</span> <span class="u" id="u2">g</span></span>
+                </div>
+                <div class="cell">
+                  <span class="k">Target</span>
+                  <span class="v"><span id="w-target">94.0</span> <span class="u" id="u3">g</span></span>
+                </div>
+              </div>
+
+              <div class="bar-block">
+                <div class="bar" id="bar" data-zone="under" role="progressbar" aria-label="Weighing progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <div class="fill" id="fill"></div>
+                  <div class="target-line" id="tline"></div>
+                </div>
+                <div class="bar-caption">
+                  <span id="cap-band">TOLERANCE ±0.5 g&nbsp; (93.5 – 94.5)</span>
+                  <span id="cap-max">125 g</span>
+                </div>
+              </div>
+
+              <div class="status-line" id="status">BELOW TOLERANCE</div>
+
+              <div class="weigh-controls">
+                <button type="button" class="btn primary" id="tare-btn">Tare Scale</button>
+                <button type="button" class="btn" id="btn-ok">Confirm Weight</button>
+                <button type="button" class="key ghost" id="btn-override">Supervisor override</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket screen -->
+      <div class="view" id="done">
+        <div class="topbar">
+          <span class="brandmark"><span class="n">WeighingMS</span><span class="s">STATION&nbsp;01</span></span>
+          <span class="crumb">BATCH <b>B-24187</b> · ORDER <b>SO-9931</b> · MACHINE <b>JET-04</b></span>
+          <span class="spacer"></span>
+          <span class="op-chip"><span class="dot"></span>Operator&nbsp;<b>R. Karim</b> · Shift A</span>
+        </div>
+
+        <div class="stage done-stage">
+          <h2>3 · Confirm &amp; print</h2>
+          <div class="weigh-interface">
+            <div class="done-content">
+              <div class="completion-summary">
+                <h3>All components weighed successfully</h3>
+                <div class="summary-stats">
+                  <div class="stat">
+                    <span class="label">Components</span>
+                    <span class="value">5</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Batch weight</span>
+                    <span class="value">180 kg</span>
+                  </div>
+                  <div class="stat">
+                    <span class="label">Target accuracy</span>
+                    <span class="value">98%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="weigh-ticket">
+                <h4>Weighing Ticket</h4>
+                <div class="ticket-preview">
+                  <div class="barcode" id="barcode" aria-hidden="true"></div>
+                  <div class="ticket-info">
+                    <div class="info-row"><strong>Batch:</strong> B-24187</div>
+                    <div class="info-row"><strong>Order:</strong> SO-9931</div>
+                    <div class="info-row"><strong>Machine:</strong> JET-04</div>
+                    <div class="info-row"><strong>Date:</strong> 2026-11-16 06:12</div>
+                  </div>
+                </div>
+
+                <button class="btn primary" onclick="window.print()">Print Ticket</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notifications" class="notifications-container"></div>
+
+    <!-- Compensation panel (hidden by default) -->
+    <div class="compensation-panel">
+      <h3>Surplus Compensation</h3>
+      <p>We detected an overweight component. Please select compensation method:</p>
+      <div class="compensation-options">
+        <button class="btn primary" id="comp-recalculate">Recalculate remaining components</button>
+        <button class="btn" id="comp-override">Supervisor override</button>
+      </div>
+    </div>
+
+    <script src="js/app.js" type="module"></script>
+  </div>
+
+  <style>
+  /* Hide comp-refs from display */
+  .comp-ref {
+    display: none;
+  }
+  </style>
+</body>
+</html>

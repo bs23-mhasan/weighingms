@@ -1,4 +1,3 @@
-// Server setup for WeighingMS Dummy APIs
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -9,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files if needed
+// Serve static frontend files
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Mock Data Store
@@ -74,12 +73,17 @@ const recipes = {
         code: "RB-RSPL",
         name: "Remazol Brill. Blue RSPL",
         target_qty: 1.250,
-        uom: "kg",
+        uom: "g",
         tolerance_pct: 1.0,
-        tolerance_min: 1.2375,
-        tolerance_max: 1.2625,
+        tolerance_min: 1237.5,
+        tolerance_max: 1262.5,
         scale_type: "PRECISION",
-        is_compensable: true
+        is_compensable: true,
+        color: "#1f4fa8",
+        lot: "2026-0341",
+        container: "C-09",
+        tare: 214,
+        max: 1600
       },
       {
         component_id: "COMP-02",
@@ -87,13 +91,18 @@ const recipes = {
         dyestuff_id: "DYE-002",
         code: "R-RB",
         name: "Remazol Red RB",
-        target_qty: 0.850,
-        uom: "kg",
+        target_qty: 850.0,
+        uom: "g",
         tolerance_pct: 1.0,
-        tolerance_min: 0.8415,
-        tolerance_max: 0.8585,
+        tolerance_min: 841.5,
+        tolerance_max: 858.5,
         scale_type: "PRECISION",
-        is_compensable: true
+        is_compensable: true,
+        color: "#b8253a",
+        lot: "2026-0298",
+        container: "C-11",
+        tare: 214,
+        max: 520
       },
       {
         component_id: "COMP-03",
@@ -101,13 +110,18 @@ const recipes = {
         dyestuff_id: "DYE-003",
         code: "Y-RGB",
         name: "Remazol Yellow RGB",
-        target_qty: 0.094,
-        uom: "kg",
+        target_qty: 94.0,
+        uom: "g",
         tolerance_pct: 0.5,
-        tolerance_min: 0.0935,
-        tolerance_max: 0.0945,
+        tolerance_min: 93.5,
+        tolerance_max: 94.5,
         scale_type: "PRECISION",
-        is_compensable: true
+        is_compensable: true,
+        color: "#d9a520",
+        lot: "2026-0387",
+        container: "C-12",
+        tare: 214,
+        max: 125
       },
       {
         component_id: "COMP-04",
@@ -115,13 +129,18 @@ const recipes = {
         dyestuff_id: "DYE-004",
         code: "NA2SO4",
         name: "Sodium Sulphate",
-        target_qty: 32.000,
-        uom: "kg",
-        tolerance_pct: 2.0,
-        tolerance_min: 31.360,
-        tolerance_max: 32.640,
+        target_qty: 24000.0,
+        uom: "g",
+        tolerance_pct: 0.5,
+        tolerance_min: 23880.0,
+        tolerance_max: 24120.0,
         scale_type: "FLOOR",
-        is_compensable: false
+        is_compensable: false,
+        color: "#c9d2dc",
+        lot: "2026-0112",
+        container: "D-03",
+        tare: 1850,
+        max: 32
       },
       {
         component_id: "COMP-05",
@@ -129,23 +148,39 @@ const recipes = {
         dyestuff_id: "DYE-005",
         code: "NA2CO3",
         name: "Soda Ash",
-        target_qty: 5.000,
-        uom: "kg",
-        tolerance_pct: 2.0,
-        tolerance_min: 4.900,
-        tolerance_max: 5.100,
+        target_qty: 9600.0,
+        uom: "g",
+        tolerance_pct: 0.5,
+        tolerance_min: 9552.0,
+        tolerance_max: 9648.0,
         scale_type: "FLOOR",
-        is_compensable: false
+        is_compensable: false,
+        color: "#e4eaf0",
+        lot: "2026-0155",
+        container: "D-05",
+        tare: 1850,
+        max: 14
       }
     ]
   }
 };
 
 const consumptions = {};
-const scales = {
-  "scale-3kg": { scale_id: "scale-3kg", class: "PRECISION", capacity: 3.0, resolution: 0.001, unit: "kg", status: "OK", current_weight: 0.0 },
-  "scale-32kg": { scale_id: "scale-32kg", class: "FLOOR", capacity: 32.0, resolution: 0.01, unit: "kg", status: "OK", current_weight: 0.0 }
-};
+
+// Mock live weight simulation
+let precisionWeight = 0;
+let floorWeight = 0;
+
+// Live weight simulation intervals
+setInterval(() => {
+  precisionWeight += 2;
+  if (precisionWeight > 1250) precisionWeight = 0;
+}, 1000);
+
+setInterval(() => {
+  floorWeight += 5;
+  if (floorWeight > 24000) floorWeight = 0;
+}, 2000);
 
 // --- API Endpoints ---
 
@@ -188,39 +223,39 @@ app.post('/api/batches/:batchId/consumption', (req, res) => {
 
 // 2. Scale API
 app.get('/api/scales', (req, res) => {
-  res.json(Object.values(scales));
+  res.json([
+    { scale_id: "scale-3kg", class: "PRECISION", capacity: 3.0, resolution: 0.001, unit: "kg", status: "OK" },
+    { scale_id: "scale-32kg", class: "FLOOR", capacity: 32.0, resolution: 0.01, unit: "kg", status: "OK" }
+  ]);
 });
 
+// Live weight endpoint with simulation
 app.get('/api/scales/:scaleId/weight', (req, res) => {
   const { scaleId } = req.params;
-  const scale = scales[scaleId];
-  if (!scale) return res.status(404).json({ error: "Scale not found" });
+  let weight = 0;
 
-  // Return current weight with a stability flag
+  if (scaleId === 'scale-3kg') {
+    weight = precisionWeight;
+  } else if (scaleId === 'scale-32kg') {
+    weight = floorWeight;
+  }
+
   res.json({
     scale_id: scaleId,
-    weight: scale.current_weight,
-    unit: scale.unit,
+    weight: parseFloat(weight.toFixed(3)),
+    unit: 'g',
     stable: true,
     timestamp: new Date().toISOString()
   });
 });
 
-app.use('/', require('./routes/web'));
-
-app.post('/api/scales/:scaleId/weight', (req, res) => {
-  const { scaleId } = req.params;
-  const { weight } = req.body;
-  if (!scales[scaleId]) return res.status(404).json({ error: "Scale not found" });
-  scales[scaleId].current_weight = parseFloat(weight) || 0;
-  res.json({ success: true, scale_id: scaleId, current_weight: scales[scaleId].current_weight });
-});
-
 app.post('/api/scales/:scaleId/tare', (req, res) => {
-  const { scaleId } = req.params;
-  if (!scales[scaleId]) return res.status(404).json({ error: "Scale not found" });
-  scales[scaleId].current_weight = 0;
-  res.json({ success: true, message: "Scale tared", scale_id: scaleId });
+  if (req.params.scaleId === 'scale-3kg') {
+    precisionWeight = 0;
+  } else if (req.params.scaleId === 'scale-32kg') {
+    floorWeight = 0;
+  }
+  res.json({ success: true, message: `Scale ${req.params.scaleId} tared` });
 });
 
 // 3. Printer / Ticket API
