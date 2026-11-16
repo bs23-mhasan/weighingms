@@ -3,6 +3,8 @@
 title: "Business Requirements Document — WeighingMS" version: "1.1 (draft)" status: draft client: FCI vendor: "WeighingMS project team" created: 2026-08-04 updated: 2026-08-04 source_documents:
 
 brief.md (2026-08-04)
+Project Requirement.pdf (2026-11-16)
+customize-weighing-station.html (2026-08-04)
 addendum.md (2026-08-04)
 weighing-flow-diagrams.md (2026-08-04)
 
