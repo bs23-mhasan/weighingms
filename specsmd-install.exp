@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+
+spawn npx specsmd@latest uninstall
+expect {
+    "Are you sure you want to uninstall specsmd?" {
+        send "y\r"
+        exp_continue
+    }
+    eof
+}
+
+spawn npx specsmd@latest install
+
+expect "Choose tools:"
+# Claude Code is selected by default when detected, but let's press enter to accept
+send "\r"
+
+expect "Which SDLC flow would you like to install?"
+# Press down arrow once to select AI-DLC, then enter
+send "\033[B\r"
+
+expect eof
